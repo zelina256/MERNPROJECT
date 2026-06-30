@@ -1,5 +1,14 @@
-let http = require('http');
-http.createServer(function (req, res) {
-    res.writeHead(200, { 'Content-Type': 'text/html' });
-    res.end('<h1>Held!</h1>');
-}).listen(5000, 'localhost', () => { console.log('Server is created'); })
+let express = require('express');
+let app = express()
+
+
+
+let funcTest = (req,res)=>{
+    res.send("Hello")
+}
+// Krijimi i nje "API"
+app.use("/", funcTest)
+// Krijimi i serverit
+app.listen(5000, ()=>{
+    console.log("Server created")
+})
