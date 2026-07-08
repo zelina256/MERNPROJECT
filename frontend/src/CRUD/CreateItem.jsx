@@ -1,15 +1,17 @@
 import React, {useState} from 'react'
 import { Container, Form, Button } from 'react-bootstrap'
 import axios from "axios"
-const Contact = () => {
-  const [contact, setContact] = useState({
-    name:"",
-    surname:"",
-    email: "",
-    comment:""
+const CreateItem = () => {
+  const [item, setItem] = useState({
+    itemName:"",
+    itemDescription:"",
+    itemImage: "",
   })
   const handleChange =(e)=>{
-    setContact({...contact, [e.target.name]:e.target.value})
+    setItem({...item, [e.target.name]:e.target.value})
+  }
+    const handleImage =(e)=>{
+    setItem({...item, itemImage:e.target.files[0]})
   }
   const handleSubmit = async(e)=>{
     e.preventDefault()
@@ -44,4 +46,4 @@ const Contact = () => {
   )
 }
 
-export default Contact
+export default  CreateItem
