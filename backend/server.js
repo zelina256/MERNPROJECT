@@ -3,6 +3,7 @@ let app = express()
 const mongoose = require('mongoose')
 const cors = require('cors')
 const session = require('express-session')
+const path = require("path")
 const contactRoute = require("./routes/contactRoute")
 const itemRoute = require("./routes/itemRoute")
 app.use(cors(
@@ -18,6 +19,7 @@ app.use(session({
     cookie: { maxAge: 1000 * 60 * 60 * 24 }
 }))
 app.use(express.json({ limit: "1000mb", extended: true }));
+app.use("/images", express.static(path.join(__dirname, "/images")));
 // Krijimi i lidhjes me databazën
 mongoose.connect("mongodb://localhost:27017/mydatabase")
     .then(() => {
