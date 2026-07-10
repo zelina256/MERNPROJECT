@@ -1,9 +1,20 @@
 import './App.css';
 import Contact from './Contact/Contact';
+import CreateItem from './CRUD/CreateItem'
+import ReadAll from './CRUD/ReadAll';
+import NavigationBar from './BASE/NavigationBar';
+import {Routes, Route} from "react-router-dom"
+import ReadOne from "./CRUD/ReadOne"
 function App() {
   return (
     <div>
-      <Contact/>
+      <NavigationBar/>
+      <Routes>
+        <Route path="/" element={<ReadAll/>}/>
+        <Route path="/contact/" element={<Contact/> }/>
+        <Route path="/createItem/" element={<CreateItem/>}/>
+        <Route path="/readOne/:id" element={<ReadOne/>}/>
+      </Routes>
     </div>
   );
 }

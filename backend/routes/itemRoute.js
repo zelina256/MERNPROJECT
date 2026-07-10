@@ -23,7 +23,7 @@ const fileFilter = (req, file, cb) => {
 }
 let upload = multer({ storage, fileFilter })
 // Create
-app.post("/addItem/", upload.single("itemImage") , async (req, res) => {
+app.post("/addItem/", upload.single("itemImage"), async (req, res) => {
     try {
         // req.body merr informacione nga react
         console.log(req.body)
@@ -41,7 +41,27 @@ app.post("/addItem/", upload.single("itemImage") , async (req, res) => {
         res.status(500).send("Item not added: " + err)
     }
 })
-
-
-
+// Read all => get
+app.get("/readAllItem/", async (req, res) => {
+    try {
+        const allItems = await itemModel.find({})
+        console.log(allItems)
+        res.status(200).send(allItems)
+    } catch (err) {
+        console.log("Items not read: " + err)
+        res.status(500).send("Items not read " + err)
+    }
+})
+// Read one => get
+app.get("/readOneItem/:id", async (req, res) => {
+    try {
+        const idItem = req.params.id
+        const oneItem = await itemModel.findById(idItem)
+        console.log(oneItem)
+        res.status(200).send(oneItem)
+    } catch (err) {
+        console.log("Items not read: " + err)
+        res.status(500).send("Items not read " + err)
+    }
+})
 module.exports = app
