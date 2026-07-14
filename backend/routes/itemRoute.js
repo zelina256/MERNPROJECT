@@ -60,8 +60,40 @@ app.get("/readOneItem/:id", async (req, res) => {
         console.log(oneItem)
         res.status(200).send(oneItem)
     } catch (err) {
-        console.log("Items not read: " + err)
-        res.status(500).send("Items not read " + err)
+        console.log("Item not read: " + err)
+        res.status(500).send("Item not read " + err)
+    }
+})
+// Update one => patch/put
+app.patch("/updateOneItem/:id", upload.single("itemImage"), async(req, res)=>{
+    try{
+        const idItem = req.params.id
+        const itemInfo = {...req.body}
+        if(req.file){
+            itemInfo.itemImage= req.file.filename
+        }
+        const updateItem = await itemModel.findByIdAndUpdate(
+           idItem,
+           {$set:itemInfo},
+        {new:true}
+        )
+        console.log(updateItem)
+        res.status(200).send(updateItem)
+    }catch (err) {
+        console.log("Item not updated: " + err)
+        res.status(500).send("Item not updated: " + err)
+    }
+})
+// Delete => delete
+app.delete("/deleteOneItem/:id", async(req, res)=>{
+    try{
+        const idItem = req.params.id
+        await itemModel.deleteOne({_id:idItem})
+        console.log("Item deleted")
+        res.status(200).send("Item deleted")
+    }catch (err) {
+        console.log("Item not deleted: " + err)
+        res.status(500).send("Item not deleted " + err)
     }
 })
 module.exports = app
