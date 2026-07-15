@@ -13,10 +13,11 @@ const ReadAll = () => {
     }, [])
     return (
         <Container>
-            <Row>
-                {allItems.map((item) => {
+            {allItems.length === 0 ? <h1>No items found</h1> : 
+             <Row>
+                {[...allItems].reverse().map((item) => {
                     return (
-                        <Col key={item._id}>
+                        <Col key={item._id} xs={12} md={6} lg={4} className="mb-4">
                             <Card>
                                 <Card.Img variant="top" src={`http://localhost:5000/images/${item.itemImage}`} />
                                 <Card.Body>
@@ -24,13 +25,14 @@ const ReadAll = () => {
                                     <Card.Text>
                                       {item.itemDescription}
                                     </Card.Text>
-                                    <Button variant="primary"href={`/readOne/${item._id}`}>Go somewhere</Button>
+                                    <Button variant="primary"href={`/readOne/${item._id}`}>Read More</Button>
                                 </Card.Body>
                             </Card>
                         </Col>
                     )
                 })}
-            </Row>
+            </Row> }
+           
         </Container>
     )
 }

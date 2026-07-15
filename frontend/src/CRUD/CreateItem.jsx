@@ -1,17 +1,24 @@
 import React, { useState } from 'react'
-import { Container, Form, Button } from 'react-bootstrap'
+import { Container, Form, Button, Row, Col } from 'react-bootstrap'
 import axios from "axios"
+import {useNavigate} from "react-router-dom"
 const CreateItem = () => {
   const [item, setItem] = useState({
     itemName: "",
     itemDescription: "",
     itemImage: "",
   })
+  const [error, setError] = useState(null)
+  const [success, setSuccess] = useState(null)
+  const [uploadedImage, setUploadedImage] = useState(null);
+  const nav = useNavigate();
   const handleChange = (e) => {
     setItem({ ...item, [e.target.name]: e.target.value })
   }
   const handleImage = (e) => {
     setItem({ ...item, itemImage: e.target.files[0] })
+    // Afishimi i imazhit 
+     setUploadedImage(URL.createObjectURL(e.target.files[0]));
   }
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -20,12 +27,19 @@ const CreateItem = () => {
       formData.append(key, value);
     })
     await axios.post("http://localhost:5000/addItem/", formData)
-      .then(res => console.log("Data item send"))
+      .then(res => {
+        nav("/allItems/");
+      })
       .catch(err => console.log("Error item" + err))
   }
   return (
     <Container>
-      <Form onSubmit={handleSubmit} encType='multipart/form-data'>
+      <h1>Create Item</h1>
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      {success && <p style={{ color: "green" }}>{success}</p>}
+      <Row>
+        <Col xs={12} md={6}>
+           <Form onSubmit={handleSubmit} encType='multipart/form-data'>
         <Form.Group className="mb-3" controlId="itemName">
           <Form.Label>Item Name</Form.Label>
           <Form.Control type="text" name="itemName" value={item.itemName} onChange={handleChange} />
@@ -42,6 +56,12 @@ const CreateItem = () => {
           Create Item
         </Button>
       </Form>
+        </Col>
+        <Col>
+          {uploadedImage && <img src={uploadedImage} alt="Uploaded" style={{ width: "100%", height: "auto" }} />}
+        </Col>
+      </Row>
+   
     </Container>
   )
 }

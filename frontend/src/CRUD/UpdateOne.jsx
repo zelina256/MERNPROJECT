@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
-import { Container, Row, Col, Card, Button, Form } from "react-bootstrap"
+import { Container, Row, Col, Card, Button, Form, Image } from "react-bootstrap"
 import { useParams, useNavigate } from 'react-router-dom'
 const UpdateOne = () => {
   // Read/leximi
       const {id} = useParams()
       const nav = useNavigate()
     const [updateItem, setUpdateItem] = useState({})
+        const [uploadedImage, setUploadedImage] = useState(null);
        const readOneData = async () => {
         await axios.get("http://localhost:5000/readOneItem/"+id)
             .then(res => setUpdateItem(res.data))
@@ -21,6 +22,7 @@ const UpdateOne = () => {
   }
   const handleImage = (e) => {
     setUpdateItem({ ...updateItem, itemImage: e.target.files[0] })
+     setUploadedImage(URL.createObjectURL(e.target.files[0]));
   }
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -34,6 +36,9 @@ const UpdateOne = () => {
   }
   return (
     <Container>
+      <h1>Update Item</h1>
+      <Row>
+        <Col xs={12} md={6}>
           <Form onSubmit={handleSubmit} encType='multipart/form-data'>
             <Form.Group className="mb-3" controlId="itemName">
               <Form.Label>Item Name</Form.Label>
@@ -51,6 +56,27 @@ const UpdateOne = () => {
               Update Item
             </Button>
           </Form>
+        </Col>
+        <Col xs={12} md={6}>
+        
+             {uploadedImage ? (
+                                    <Image
+                                        src={uploadedImage}
+                                        alt='Uploaded'
+                                        rounded
+                                        className='img-fluid'
+                                    />
+                                ) : (
+                                    <Image
+                                        src={`http://localhost:5000/images/${updateItem.itemImage}`}
+                                        alt='Uploaded'
+                                        rounded
+                                        className='img-fluid'
+                                    />
+                                )}
+        </Col>
+      </Row>
+        
         </Container>
   )
 }

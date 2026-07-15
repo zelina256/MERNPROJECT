@@ -3,6 +3,8 @@ const app = express()
 const itemModel = require("../models/itemModel")
 const multer = require("multer")
 const path = require("path")
+//fs është moduli i Node.js që përdoret për të punuar me skedarët (files) dhe dosjet (folders),
+const fs = require("fs/promises")
 
 // Konfigurimet per multer
 const storage = multer.diskStorage({
@@ -65,35 +67,52 @@ app.get("/readOneItem/:id", async (req, res) => {
     }
 })
 // Update one => patch/put
-app.patch("/updateOneItem/:id", upload.single("itemImage"), async(req, res)=>{
-    try{
+app.patch("/updateOneItem/:id", upload.single("itemImage"), async (req, res) => {
+    try {
         const idItem = req.params.id
-        const itemInfo = {...req.body}
-        if(req.file){
-            itemInfo.itemImage= req.file.filename
+        const itemInfo = { ...req.body }
+        if (req.file) {
+            itemInfo.itemImage = req.file.filename
         }
         const updateItem = await itemModel.findByIdAndUpdate(
-           idItem,
-           {$set:itemInfo},
-        {new:true}
+            idItem,
+            { $set: itemInfo },
+            { new: true }
         )
         console.log(updateItem)
         res.status(200).send(updateItem)
-    }catch (err) {
+    } catch (err) {
         console.log("Item not updated: " + err)
         res.status(500).send("Item not updated: " + err)
     }
 })
 // Delete => delete
-app.delete("/deleteOneItem/:id", async(req, res)=>{
-    try{
-        const idItem = req.params.id
-        await itemModel.deleteOne({_id:idItem})
-        console.log("Item deleted")
-        res.status(200).send("Item deleted")
-    }catch (err) {
-        console.log("Item not deleted: " + err)
-        res.status(500).send("Item not deleted " + err)
+app.delete("/deleteOneItem/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Fshin dokumentin nga databaza
+        const item = await itemModel.findByIdAndDelete(id);
+
+        // Kontrollon nese dokumenti ekziston
+        if (!item) return res.status(404).send("Item not found");
+
+        // Kontrolli  per imazhin dhe fshirja e tij nga serveri
+        if (item.itemImage) {
+            // Gjetja e imazhit tek folderi images
+            const imagePath = path.join(__dirname, "..", "images", item.itemImage);
+            try {
+                // unlink:Fshirja e një file
+                await fs.unlink(imagePath);
+            } catch (err) {
+                // "ENOENT" është një kod gabimi (error code) që vjen nga sistemi operativ kur Node.js punon me skedarë ose dosje.
+                //  ENOENT => Error NO ENTry (No such file or directory)
+                if (err.code !== "ENOENT") throw err;
+            }
+        }
+        res.status(200).send("Item deleted");
+    } catch (err) {
+        res.status(500).send("Item not deleted: " + err);
     }
-})
+});
 module.exports = app
